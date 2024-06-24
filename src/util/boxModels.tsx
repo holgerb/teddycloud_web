@@ -14,10 +14,10 @@ export default function GetBoxModelImages() {
         async function fetchData() {
             try {
                 // Fetch the JSON data
-                const response = await fetch(`${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/tonieboxesJson`);
+                const response = await fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/tonieboxesJson`);
                 const jsonData = await response.json();
                 const responseCustom = await fetch(
-                    `${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/tonieboxesCustomJson`
+                    `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/tonieboxesCustomJson`
                 );
                 const jsonDataCustom = await responseCustom.json();
                 const jsonDataCombined = [...jsonDataCustom, ...jsonData];

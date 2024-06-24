@@ -35,11 +35,11 @@ export const StyledFooter = () => {
         if (footer) {
             setFooterHeight(footer.offsetHeight);
         }
-        fetch(`${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/settings/get/internal.version.v_long`)
+        fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/get/internal.version.v_long`)
             .then((response) => response.text()) // Parse response as text
             .then((data) => setVersion(data)) // Set fetched data to state
             .catch((error) => console.error("Error fetching data:", error));
-        fetch(`${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/settings/get/internal.version.v_short`)
+        fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/get/internal.version.v_short`)
             .then((response) => response.text()) // Parse response as text
             .then((data) => setVersionShort(data)) // Set fetched data to state
             .catch((error) => console.error("Error fetching data:", error));

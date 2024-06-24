@@ -13,6 +13,7 @@
         "@types/node": "20.14.8",
         "@types/react": "18.3.3",
         "@types/react-dom": "18.3.0",
+        "@vitejs/plugin-react-swc": "^3.7.0",
         "antd": "5.18.3",
         "dnd-kit": "0.0.2",
         "formik": "2.4.6",
@@ -26,6 +27,9 @@
         "react-router-dom": "6.23.1",
         "styled-components": "6.1.11",
         "typescript": "5.5.2",
+        "vite": "^5.3.1",
+        "vite-plugin-svgr": "^4.2.0",
+        "vite-tsconfig-paths": "^4.3.2",
         "yup": "1.4.0"
     },
     "overrides": {
@@ -33,12 +37,12 @@
         "postcss": "8.4.31"
     },
     "devDependencies": {
-        "@babel/plugin-transform-private-property-in-object": "7.24.7",
-        "react-scripts": "5.0.1"
+        "@babel/plugin-transform-private-property-in-object": "7.24.7"
     },
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
+        "start": "vite",
+        "build": "tsc && vite build",
+        "serve": "vite preview",
         "api:generate": "rm -rf ./src/api && openapi-generator-cli generate -i ./api/swagger.yaml -g typescript-fetch -o ./src/api --additional-properties=typescriptThreePlus=true",
         "test": "react-scripts test",
         "eject": "react-scripts eject",

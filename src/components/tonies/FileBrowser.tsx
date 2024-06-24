@@ -88,7 +88,7 @@ export const FileBrowser: React.FC<{
     useEffect(() => {
         // TODO: fetch option value with API Client generator
         fetch(
-            `${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/fileIndexV2?path=${path}&special=${special}` +
+            `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/fileIndexV2?path=${path}&special=${special}` +
                 (overlay ? `&overlay=${overlay}` : "")
         )
             .then((response) => response.json())
@@ -208,7 +208,7 @@ export const FileBrowser: React.FC<{
                     <PlayCircleOutlined
                         onClick={() =>
                             playAudio(
-                                process.env.REACT_APP_TEDDYCLOUD_API_URL +
+                                import.meta.env.VITE_APP_TEDDYCLOUD_API_URL +
                                     "/content" +
                                     path +
                                     "/" +

@@ -72,7 +72,7 @@ export const EncoderPage = () => {
         };
 
         const queryString = createQueryString(queryParams);
-        const response = await fetch(`${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/pcmUpload?${queryString}`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/pcmUpload?${queryString}`, {
             method: "POST",
             body: formData,
         });
@@ -118,7 +118,7 @@ export const EncoderPage = () => {
     const onLoadTreeData: TreeSelectProps["loadData"] = ({ id }) =>
         new Promise((resolve, reject) => {
             const newPath = pathFromNodeId(id);
-            fetch(`${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/fileIndexV2?path=${newPath}&special=library`)
+            fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/fileIndexV2?path=${newPath}&special=library`)
                 .then((response) => response.json())
                 .then((data) => {
                     var list: any[] = data.files;

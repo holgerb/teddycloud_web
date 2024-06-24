@@ -12,7 +12,9 @@
  * Do not edit the class manually.
  */
 
-export const BASE_PATH = "http://localhost".replace(/\/+$/, "");
+//export const BASE_PATH = "http://localhost".replace(/\/+$/, "");
+//todo holgerb
+export const BASE_PATH = import.meta.env.VITE_APP_TEDDYCLOUD_API_URL
 
 export interface ConfigurationParameters {
     basePath?: string; // override base path

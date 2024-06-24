@@ -42,7 +42,7 @@ const InputNumberField = (props: InputNumberFieldProps & InputNumberProps) => {
 
     const handleOverlayChange = (checked: boolean) => {
         const overlayRoute = `?overlay=${overlayId}`;
-        const url = `${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/settings/${
+        const url = `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/${
             checked ? "set" : "reset"
         }/${name}${overlayRoute}`;
 
@@ -75,7 +75,7 @@ const InputNumberField = (props: InputNumberFieldProps & InputNumberProps) => {
 
     const fetchFieldValue = () => {
         try {
-            fetch(`${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/settings/get/${name}`)
+            fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/get/${name}`)
                 .then((response) => response.text())
                 .then((value) => {
                     helpers.setValue(value === "" ? undefined : Number(value));
@@ -112,7 +112,7 @@ const InputNumberField = (props: InputNumberFieldProps & InputNumberProps) => {
                     const overlayRoute = overlayed ? `?overlay=` + overlayId : ``;
 
                     try {
-                        fetch(`${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/settings/set/${name}${overlayRoute}`, {
+                        fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/set/${name}${overlayRoute}`, {
                             method: "POST",
                             body: value?.toString(),
                             headers: {

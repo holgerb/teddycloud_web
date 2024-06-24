@@ -17,7 +17,7 @@ export const TonieArticleSearch: React.FC<{
     const handleSearch = async (search: string) => {
         const searchEncode = encodeURIComponent(search);
         const url =
-            process.env.REACT_APP_TEDDYCLOUD_API_URL +
+            import.meta.env.VITE_APP_TEDDYCLOUD_API_URL +
             "/api/toniesJsonSearch?" +
             "searchModel=" +
             searchEncode +

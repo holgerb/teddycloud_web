@@ -2,6 +2,7 @@ import "./App.css";
 import { Layout, Space } from "antd";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AudioProvider } from "./components/audio/AudioContext";
+import "./i18n";
 
 import { UiTest } from "./components/UiTest";
 import { SettingsPage } from "./pages/settings/SettingsPage";
@@ -75,7 +76,7 @@ function App() {
         >
             <div className="App">
                 <Layout style={{ minHeight: "100vh" }}>
-                    <Router basename={process.env.REACT_APP_TEDDYCLOUD_WEB_BASE}>
+                    <Router basename="/web">
                         <AudioProvider>
                             <StyledHeader themeSwitch={themeSwitchIcon} />
                             <Layout>

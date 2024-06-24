@@ -242,7 +242,7 @@ export const TonieboxCard: React.FC<{
             await api.apiTriggerWriteConfigGet();
         };
         try {
-            const url = `${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/settings/set/boxModel?overlay=${tonieboxCard.ID}`;
+            const url = `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/set/boxModel?overlay=${tonieboxCard.ID}`;
             await fetch(url, {
                 method: "POST",
                 body: selectedModel.toString(),
@@ -271,7 +271,7 @@ export const TonieboxCard: React.FC<{
             await api.apiTriggerWriteConfigGet();
         };
         try {
-            const url = `${process.env.REACT_APP_TEDDYCLOUD_API_URL}/api/settings/set/boxName?overlay=${tonieboxCard.ID}`;
+            const url = `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/set/boxName?overlay=${tonieboxCard.ID}`;
             await fetch(url, {
                 method: "POST",
                 body: boxName.toString(),

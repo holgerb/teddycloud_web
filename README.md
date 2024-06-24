@@ -13,8 +13,8 @@ You'll need to allow CORS for your teddyCloud instance used for development. The
 Please place an enviroment file '.env.development.local' in the teddycloud_web directory.
 
 ```
-REACT_APP_TEDDYCLOUD_API_URL=http://<teddycloud-ip>
-REACT_APP_TEDDYCLOUD_WEB_BASE=/web
+VITE_APP_TEDDYCLOUD_API_URL=http://<teddycloud-ip>
+VITE_APP_TEDDYCLOUD_WEB_BASE=/web
 ```
 
 ### Start NPM / teddyCloud

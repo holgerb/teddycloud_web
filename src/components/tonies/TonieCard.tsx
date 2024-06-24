@@ -117,7 +117,7 @@ export const TonieCard: React.FC<{
 
     const handleLiveClick = async () => {
         const url =
-            `${process.env.REACT_APP_TEDDYCLOUD_API_URL}/content/json/set/${tonieCard.ruid}` +
+            `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/content/json/set/${tonieCard.ruid}` +
             (overlay ? `?overlay=${overlay}` : "");
         try {
             const response = await fetch(url, {
@@ -140,7 +140,7 @@ export const TonieCard: React.FC<{
 
     const handleNoCloudClick = async () => {
         const url =
-            `${process.env.REACT_APP_TEDDYCLOUD_API_URL}/content/json/set/${tonieCard.ruid}` +
+            `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/content/json/set/${tonieCard.ruid}` +
             (overlay ? `?overlay=${overlay}` : "");
         try {
             const response = await fetch(url, {
@@ -162,12 +162,12 @@ export const TonieCard: React.FC<{
     };
 
     const handlePlayPauseClick = async () => {
-        const url = process.env.REACT_APP_TEDDYCLOUD_API_URL + tonieCard.audioUrl;
+        const url = import.meta.env.VITE_APP_TEDDYCLOUD_API_URL + tonieCard.audioUrl;
         playAudio(url, tonieCard.tonieInfo);
     };
 
     const handleBackgroundDownload = async () => {
-        const url = process.env.REACT_APP_TEDDYCLOUD_API_URL + tonieCard.downloadTriggerUrl;
+        const url = import.meta.env.VITE_APP_TEDDYCLOUD_API_URL + tonieCard.downloadTriggerUrl;
         setDownloadTriggerUrl("");
         try {
             messageApi.open({
@@ -201,7 +201,7 @@ export const TonieCard: React.FC<{
 
     const handleModelSave = async () => {
         const url =
-            `${process.env.REACT_APP_TEDDYCLOUD_API_URL}/content/json/set/${tonieCard.ruid}` +
+            `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/content/json/set/${tonieCard.ruid}` +
             (overlay ? `?overlay=${overlay}` : "");
         try {
             const response = await fetch(url, {
@@ -224,7 +224,7 @@ export const TonieCard: React.FC<{
 
     const handleSourceSave = async () => {
         const url =
-            `${process.env.REACT_APP_TEDDYCLOUD_API_URL}/content/json/set/${tonieCard.ruid}` +
+            `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/content/json/set/${tonieCard.ruid}` +
             (overlay ? `?overlay=${overlay}` : "");
         try {
             const response = await fetch(url, {
