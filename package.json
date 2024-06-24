@@ -1,6 +1,7 @@
 {
     "name": "teddycloud-web",
     "version": "0.5.1",
+    "type": "module",
     "private": true,
     "homepage": "/web",
     "dependencies": {
