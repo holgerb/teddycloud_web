@@ -1,10 +1,14 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite'
+import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react-swc'
 
 // https://vitejs.dev/config/
 export default defineConfig({
     base: '/web',
+    build: {
+        outDir: 'build',
+        emptyOutDir: true,
+    },
     plugins: [react()],
     test: {
         globals: true,
