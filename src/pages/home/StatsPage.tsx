@@ -1,9 +1,9 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import Item from "antd/es/list/Item";
 import { useTranslation } from "react-i18next";
 import {
     HiddenDesktop,
     StyledBreadcrumb,
+    StyledBreadcrumbItem,
     StyledContent,
     StyledLayout,
     StyledSider,
@@ -11,6 +11,8 @@ import {
 import { HomeSubNav } from "../../components/home/HomeSubNav";
 import { StatsList, TeddyCloudApi } from "../../api";
 import { defaultAPIConfig } from "../../config/defaultApiConfig";
+import { useEffect, useState } from "react";
+import React from "react";
 
 const api = new TeddyCloudApi(defaultAPIConfig());
 
@@ -28,7 +30,6 @@ export const StatsPage = () => {
     useEffect(() => {
         fetchStats();
     }, []);
-
     useEffect(() => {
         const interval = setInterval(() => {
             fetchStats();
