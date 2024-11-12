@@ -16,8 +16,8 @@ import {
     StatsListToJSON,
 } from "../models";
 
-import { TagTonieCard, TagsTonieCardList, TonieCardProps } from "../../components/tonies/TonieCard";
-import { TonieboxCardList, TonieboxCardProps } from "../../components/tonieboxes/TonieboxCard";
+import { TagTonieCard, TagTonieCardsList, TonieCardProps } from "../../types/tonieTypes";
+import { TonieboxCardsList, TonieboxCardProps } from "../../types/tonieboxTypes";
 
 export interface ApiSetCloudCacheContentPostRequest {
     body: boolean;
@@ -36,9 +36,9 @@ export class TeddyCloudApi extends runtime.BaseAPI {
      */
     async apiGetTonieboxesIndexRaw(
         initOverrides?: RequestInit | runtime.InitOverrideFunction
-    ): Promise<runtime.ApiResponse<TonieboxCardList>> {
+    ): Promise<runtime.ApiResponse<TonieboxCardsList>> {
         const response = await this.apiGetTeddyCloudApiRaw(`/api/getBoxes`, undefined, initOverrides);
-        return new runtime.JSONApiResponse<TonieboxCardList>(response);
+        return new runtime.JSONApiResponse<TonieboxCardsList>(response);
     }
 
     /**
@@ -57,12 +57,12 @@ export class TeddyCloudApi extends runtime.BaseAPI {
     async apiGetTagIndexRaw(
         overlay?: string,
         initOverrides?: RequestInit | runtime.InitOverrideFunction
-    ): Promise<runtime.ApiResponse<TagsTonieCardList>> {
+    ): Promise<runtime.ApiResponse<TagTonieCardsList>> {
         const queryParameters: any = {};
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.apiGetTeddyCloudApiRaw(`/api/getTagIndex`, overlay, initOverrides);
-        return new runtime.JSONApiResponse<TagsTonieCardList>(response);
+        return new runtime.JSONApiResponse<TagTonieCardsList>(response);
     }
 
     /**
@@ -75,67 +75,6 @@ export class TeddyCloudApi extends runtime.BaseAPI {
     ): Promise<TonieCardProps[]> {
         const response = await this.apiGetTagIndexRaw(overlay, initOverrides);
         const tags = (await response.value()).tags;
-
-        if (fetchSourceInfo) {
-            // remove this if the api returns already the sourceInfo itself:
-            // start
-            const uniqueSourcePaths = Array.from(
-                new Set(
-                    tags
-                        .map((tag) => {
-                            const { source } = tag;
-                            if (source.startsWith("lib://")) {
-                                const pathParts = source.split("/");
-                                pathParts.pop();
-                                return pathParts.join("/").replace("lib:/", "");
-                            }
-                            return null;
-                        })
-                        .filter((source) => source !== null)
-                )
-            );
-            const fetchDataForPath = async (path: any) => {
-                try {
-                    const response = await this.apiGetTeddyCloudApiRaw(`/api/fileIndexV2?path=${path}&special=library`);
-                    const data = await response.json();
-                    return { path, data };
-                } catch (error) {
-                    console.error(`Error fetching data for path: ${path}`, error);
-                    return { path, data: null };
-                }
-            };
-            const results = await Promise.all(uniqueSourcePaths.map(fetchDataForPath));
-            // Check for matches and append tonieInfo to tags as sourceInfo
-            const updatedTags = tags.map((tag) => {
-                const result = results.find((result) => {
-                    if (result.data && result.data.files) {
-                        return result.data.files.some(
-                            (file: { name: any }) =>
-                                tag.source === `lib://${result.path}/${file.name}`.replace("///", "//")
-                        );
-                    }
-                    return false;
-                });
-                if (result && result.data && result.data.files) {
-                    const matchedFile = result.data.files.find(
-                        (file: { name: any }) => tag.source === `lib://${result.path}/${file.name}`.replace("///", "//")
-                    );
-                    if (matchedFile) {
-                        return {
-                            ...tag,
-                            sourceInfo: matchedFile.tonieInfo
-                                ? matchedFile.tonieInfo
-                                : { picture: "/img_unknown.png", series: matchedFile.name },
-                        };
-                    }
-                }
-                // If no match found, return the tag as is
-                return tag;
-            });
-            return updatedTags;
-            // remove this if the api returns already the sourceInfo itself
-            // end
-        }
 
         return tags;
     }
@@ -162,36 +101,6 @@ export class TeddyCloudApi extends runtime.BaseAPI {
     ): Promise<TonieCardProps> {
         const response = await this.apiGetTagInfoRaw(ruid, overlay, initOverrides);
         const tag = (await response.value()).tagInfo;
-
-        // remove this if the api returns already the sourceInfo itself:
-        // start
-        if (tag.source.startsWith("lib://")) {
-            const pathParts = tag.source.split("/");
-            pathParts.pop();
-            const path = pathParts.join("/").replace("lib:/", "");
-
-            try {
-                const response = await this.apiGetTeddyCloudApiRaw(`/api/fileIndexV2?path=${path}&special=library`);
-                const data = await response.json();
-                if (data && data.files) {
-                    const matchedFile = data.files.find(
-                        (file: { name: any }) => tag.source === `lib://${path}/${file.name}`.replace("///", "//")
-                    );
-                    if (matchedFile) {
-                        return {
-                            ...tag,
-                            sourceInfo: matchedFile.tonieInfo
-                                ? matchedFile.tonieInfo
-                                : { picture: "/img_unknown.png", series: matchedFile.name },
-                        };
-                    }
-                }
-            } catch (error) {
-                console.error(`Error fetching data for path: ${path}`, error);
-            }
-        }
-        // remove this if the api returns already the sourceInfo itself:
-        // end
 
         return tag;
     }
@@ -402,7 +311,7 @@ export class TeddyCloudApi extends runtime.BaseAPI {
     ): Promise<string> {
         const response = await this.apiGetTeddyCloudSettingRaw("internal.last_connection", overlay, initOverrides);
         const timestamp = await response.text();
-        const date = timestamp ? new Date(parseInt(timestamp, 10) * 1000) : "";
+        const date = timestamp && timestamp !== "0" ? new Date(parseInt(timestamp, 10) * 1000) : "";
         return date.toLocaleString();
     }
 
@@ -653,19 +562,25 @@ export class TeddyCloudApi extends runtime.BaseAPI {
             const blob = new Blob([str], { type: "text/plain" });
             return blob;
         };
-        const response = await this.request(
-            {
-                path: `${path}${overlay ? "?overlay=" + overlay : ""}`,
-                method: "POST",
-                headers: headerParameters,
-                body: stringToBlob(body?.toString() || ""),
-            },
-            initOverrides
-        );
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+
+        try {
+            const response = await this.request(
+                {
+                    path: `${path}${overlay ? "?overlay=" + overlay : ""}`,
+                    method: "POST",
+                    headers: headerParameters,
+                    body: stringToBlob(body?.toString() || ""),
+                },
+                initOverrides
+            );
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            return response;
+        } catch (err: any) {
+            return err.response;
         }
-        return response;
     }
 
     /**
@@ -685,15 +600,45 @@ export class TeddyCloudApi extends runtime.BaseAPI {
         initOverrides?: RequestInit | runtime.InitOverrideFunction,
         headerParameters: runtime.HTTPHeaders = {}
     ): Promise<Response> {
-        // To Do: Replace fetch with request
-        const response = await fetch(process.env.REACT_APP_TEDDYCLOUD_API_URL + path, {
-            method: "POST",
-            body: formData,
-        });
+        try {
+            // To Do: Replace fetch with request
+            const response = await fetch(import.meta.env.VITE_APP_TEDDYCLOUD_API_URL + path, {
+                method: "POST",
+                body: formData,
+            });
 
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            return response;
+        } catch (err: any) {
+            if (err.response) {
+                return err.response;
+            } else if (err instanceof TypeError) {
+                return new Response(
+                    JSON.stringify({
+                        error: "Network error, please try again later.",
+                        message: err.message,
+                    }),
+                    {
+                        status: 500,
+                        statusText: "Network Error",
+                        headers: { "Content-Type": "application/json" },
+                    }
+                );
+            } else {
+                return new Response(
+                    JSON.stringify({
+                        error: "An unexpected error occurred.",
+                        message: err,
+                    }),
+                    {
+                        status: 500,
+                        statusText: "Unexpected Error",
+                        headers: { "Content-Type": "application/json" },
+                    }
+                );
+            }
         }
-        return response;
     }
 }

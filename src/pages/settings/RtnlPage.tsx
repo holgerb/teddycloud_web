@@ -1,16 +1,17 @@
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Switch, Typography, Divider, Button } from "antd";
-import {
+
+import BreadcrumbWrapper, {
     HiddenDesktop,
-    StyledBreadcrumb,
     StyledContent,
     StyledLayout,
     StyledSider,
 } from "../../components/StyledComponents";
 import { SettingsSubNav } from "../../components/settings/SettingsSubNav";
-import { useEffect, useRef, useState } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { detectColorScheme } from "../../utils/browserUtils";
 
 const { Paragraph, Text } = Typography;
 
@@ -88,7 +89,7 @@ export const RtnlPage = () => {
 
     useEffect(() => {
         if (rtnlActive) {
-            const eventSource = new EventSource(process.env.REACT_APP_TEDDYCLOUD_API_URL + "/api/sse");
+            const eventSource = new EventSource(import.meta.env.VITE_APP_TEDDYCLOUD_API_URL + "/api/sse");
             eventSource.onopen = () => {
                 console.log("Connection established.");
             };
@@ -166,17 +167,6 @@ export const RtnlPage = () => {
         setLogEntries([]);
     };
 
-    function detectColorScheme() {
-        const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const storedTheme = localStorage.getItem("theme");
-
-        if (storedTheme === "auto") {
-            return prefersDarkMode ? "dark" : "light";
-        } else {
-            return storedTheme;
-        }
-    }
-
     return (
         <>
             <StyledSider>
@@ -186,7 +176,7 @@ export const RtnlPage = () => {
                 <HiddenDesktop>
                     <SettingsSubNav />
                 </HiddenDesktop>
-                <StyledBreadcrumb
+                <BreadcrumbWrapper
                     items={[{ title: t("home.navigationTitle") }, { title: t("settings.rtnl.navigationTitle") }]}
                 />
                 <StyledContent>
