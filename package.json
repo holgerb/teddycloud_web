@@ -44,7 +44,7 @@
     "scripts": {
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "lint": "npx eslint --max-warnings=0 ."
+        "lint": "npx eslint --max-warnings=0 .",
         "start-http": "cross-env PORT=3000 vite",
         "start-https": "cross-env HTTPS=true PORT=3443 vite",
         "start": "concurrently \"npm run start-http\" \"npm run start-https\"",
