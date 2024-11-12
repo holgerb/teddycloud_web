@@ -1,18 +1,16 @@
-import Item from "antd/es/list/Item";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
+
+import { StatsList, TeddyCloudApi } from "../../api";
+import { defaultAPIConfig } from "../../config/defaultApiConfig";
+
+import BreadcrumbWrapper, {
     HiddenDesktop,
-    StyledBreadcrumb,
-    StyledBreadcrumbItem,
     StyledContent,
     StyledLayout,
     StyledSider,
 } from "../../components/StyledComponents";
 import { HomeSubNav } from "../../components/home/HomeSubNav";
-import { StatsList, TeddyCloudApi } from "../../api";
-import { defaultAPIConfig } from "../../config/defaultApiConfig";
-import { useEffect, useState } from "react";
-import React from "react";
 
 const api = new TeddyCloudApi(defaultAPIConfig());
 
@@ -30,6 +28,7 @@ export const StatsPage = () => {
     useEffect(() => {
         fetchStats();
     }, []);
+
     useEffect(() => {
         const interval = setInterval(() => {
             fetchStats();
@@ -46,7 +45,7 @@ export const StatsPage = () => {
                 <HiddenDesktop>
                     <HomeSubNav />
                 </HiddenDesktop>
-                <StyledBreadcrumb
+                <BreadcrumbWrapper
                     items={[{ title: t("home.navigationTitle") }, { title: t("home.stats.navigationTitle") }]}
                 />
                 <StyledContent>

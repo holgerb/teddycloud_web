@@ -1,11 +1,12 @@
 import { MouseEventHandler, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useField } from "formik";
-import FormItem from "antd/es/form/FormItem";
 import { Input, InputProps, message, Checkbox } from "antd";
+import FormItem from "antd/es/form/FormItem";
+import { SaveOutlined } from "@ant-design/icons";
+import { useField } from "formik";
+
 import { TeddyCloudApi } from "../../api";
 import { defaultAPIConfig } from "../../config/defaultApiConfig";
-import { SaveOutlined } from "@ant-design/icons";
 
 type InputFieldProps = {
     name: string;
@@ -19,7 +20,7 @@ const InputField = (props: InputFieldProps & InputProps) => {
     const { t } = useTranslation();
     const { name, label, description, overlayed: initialOverlayed, overlayId, ...inputProps } = props;
     const [field, meta, helpers] = useField(name!);
-    const [overlayed, setOverlayed] = useState(initialOverlayed); // State to track overlayed boolean
+    const [overlayed, setOverlayed] = useState(initialOverlayed);
 
     const hasFeedback = !!(meta.touched && meta.error);
     const help = meta.touched && meta.error && t(meta.error);
@@ -28,23 +29,11 @@ const InputField = (props: InputFieldProps & InputProps) => {
     const api = new TeddyCloudApi(defaultAPIConfig());
 
     const handleOverlayChange = (checked: boolean) => {
-        const overlayRoute = `?overlay=${overlayId}`;
-        const url = `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/${
-            checked ? "set" : "reset"
-        }/${name}${overlayRoute}`;
-
         try {
-            fetch(url, {
-                method: "POST",
-                body: checked ? field.value?.toString() || "" : "",
-                headers: {
-                    "Content-Type": "text/plain",
-                },
-            })
+            api.apiPostTeddyCloudSetting(name, field.value, overlayId, !checked)
                 .then(() => {
                     triggerWriteConfig();
                     if (!checked) {
-                        // Fetch field value if checkbox is unchecked
                         fetchFieldValue();
                         message.success(t("settings.overlayDisabled"));
                     } else {
@@ -60,22 +49,12 @@ const InputField = (props: InputFieldProps & InputProps) => {
     };
 
     const handleFieldSave: MouseEventHandler<HTMLSpanElement> = (event) => {
-        const inputValue = field.value || ""; // Get input value from useField hook
-
         const triggerWriteConfig = async () => {
             await api.apiTriggerWriteConfigGet();
         };
 
-        const overlayRoute = overlayed ? `?overlay=` + overlayId : ``;
-
         try {
-            fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/set/${name}${overlayRoute}`, {
-                method: "POST",
-                body: inputValue,
-                headers: {
-                    "Content-Type": "text/plain",
-                },
-            })
+            api.apiPostTeddyCloudSetting(name, field.value, overlayId)
                 .then(() => {
                     triggerWriteConfig();
                     message.success(t("settings.saved"));
@@ -87,16 +66,16 @@ const InputField = (props: InputFieldProps & InputProps) => {
             message.error("Error while sending data to server.");
         }
 
-        helpers.setValue(inputValue);
+        helpers.setValue(field.value || "");
     };
 
     const handleSaveIconClick: MouseEventHandler<HTMLSpanElement> = (event) => {
-        handleFieldSave(event); // Call handleFieldSave when the icon is clicked
+        handleFieldSave(event);
     };
 
     const fetchFieldValue = () => {
         try {
-            fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/get/${name}`)
+            api.apiGetTeddyCloudSettingRaw(name)
                 .then((response) => response.text())
                 .then((value) => {
                     helpers.setValue(value);
@@ -120,8 +99,12 @@ const InputField = (props: InputFieldProps & InputProps) => {
     const addonAfter = [
         <SaveOutlined
             disabled={overlayed ? false : true}
-            style={{ cursor: overlayed ? "pointer" : "default", margin: overlayed !== undefined ? "0 16px 0 0" : "0" }}
+            style={{
+                cursor: overlayed || overlayed === undefined ? "pointer" : "default",
+                margin: overlayed !== undefined ? "0 16px 0 0" : "0",
+            }}
             onClick={handleSaveIconClick}
+            key="saveIcon"
         />,
         overlayed === undefined ? (
             ""
@@ -132,6 +115,7 @@ const InputField = (props: InputFieldProps & InputProps) => {
                     setOverlayed(e.target.checked);
                     handleOverlayChange(e.target.checked);
                 }}
+                key="overlayCheckBox"
             >
                 {t("settings.overlayed")}
             </Checkbox>
@@ -149,7 +133,7 @@ const InputField = (props: InputFieldProps & InputProps) => {
                 {...inputProps}
                 {...field}
                 addonAfter={addonAfter}
-                disabled={!overlayed && overlayed !== undefined} // Disable if overlayed is false
+                disabled={!overlayed && overlayed !== undefined}
             />
         </FormItem>
     );

@@ -1,11 +1,20 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { theme } from "antd";
 import { Footer } from "antd/es/layout/layout";
+import { HeartFilled } from "@ant-design/icons";
 import styled from "styled-components";
 
-import { Link } from "react-router-dom";
-import { HiddenDesktop, HiddenMobile } from "../StyledComponents";
-import AudioPlayerFooter from "./AudioPlayerFooter";
+import { gitHubSponsoringUrl, gitHubTCReleasesUrl } from "../../constants";
 
-import { useEffect, useState } from "react";
+import { TeddyCloudApi } from "../../api";
+import { defaultAPIConfig } from "../../config/defaultApiConfig";
+
+import AudioPlayerFooter from "./AudioPlayerFooter";
+import { HiddenDesktop, HiddenMobile } from "../StyledComponents";
+
+const { useToken } = theme;
 
 const StyledFooterComponent = styled(Footer)`
     position: fixed;
@@ -25,23 +34,36 @@ const StyledCenterPart = styled.div`
     align-items: center;
 `;
 
+const api = new TeddyCloudApi(defaultAPIConfig());
+
 export const StyledFooter = () => {
+    const { t } = useTranslation();
+    const { token } = useToken();
     const [footerHeight, setFooterHeight] = useState(0);
+
     const [version, setVersion] = useState("");
     const [versionShort, setVersionShort] = useState("");
+    const [gitShaShort, setGitShaShort] = useState("");
 
-    useEffect(() => {
+    const handleAudioPlayerVisibilityChange = () => {
         const footer = document.querySelector("footer");
         if (footer) {
             setFooterHeight(footer.offsetHeight);
         }
-        fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/get/internal.version.v_long`)
-            .then((response) => response.text()) // Parse response as text
-            .then((data) => setVersion(data)) // Set fetched data to state
+    };
+
+    useEffect(() => {
+        api.apiGetTeddyCloudSettingRaw("internal.version.v_long")
+            .then((response) => response.text())
+            .then((data) => setVersion(data))
             .catch((error) => console.error("Error fetching data:", error));
-        fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/get/internal.version.v_short`)
-            .then((response) => response.text()) // Parse response as text
-            .then((data) => setVersionShort(data)) // Set fetched data to state
+        api.apiGetTeddyCloudSettingRaw("internal.version.v_short")
+            .then((response) => response.text())
+            .then((data) => setVersionShort(data))
+            .catch((error) => console.error("Error fetching data:", error));
+        api.apiGetTeddyCloudSettingRaw("internal.version.git_sha_short")
+            .then((response) => response.text())
+            .then((data) => setGitShaShort(data))
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
 
@@ -51,18 +73,26 @@ export const StyledFooter = () => {
 
             <StyledFooterComponent>
                 <StyledCenterPart>
-                    <AudioPlayerFooter />
+                    <AudioPlayerFooter onVisibilityChange={handleAudioPlayerVisibilityChange} />
                 </StyledCenterPart>
                 <StyledCenterPart>
-                    <div style={{ marginTop: "8px" }}>
-                        <small>
-                            <Link
-                                to="https://github.com/toniebox-reverse-engineering/teddycloud/releases/"
-                                target="_blank"
-                            >
-                                <HiddenDesktop>{versionShort}</HiddenDesktop>
+                    <div>
+                        <small style={{ display: "flex", color: token.colorText }}>
+                            <Link to={gitHubTCReleasesUrl} target="_blank">
+                                <HiddenDesktop>
+                                    {versionShort} ({gitShaShort})
+                                </HiddenDesktop>
                                 <HiddenMobile>{version}</HiddenMobile>
                             </Link>
+                            <HiddenMobile style={{ paddingLeft: 8 }}>
+                                -
+                                <HeartFilled style={{ paddingLeft: 8, color: "#eb2f96" }} /> {t("footer.sponsorText")}{" "}
+                                <b>
+                                    <Link to={gitHubSponsoringUrl} target="_blank">
+                                        {t("footer.sponsor")}
+                                    </Link>
+                                </b>
+                            </HiddenMobile>
                         </small>
                     </div>
                 </StyledCenterPart>

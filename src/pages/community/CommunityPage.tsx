@@ -1,10 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Typography, Button, Alert } from "antd";
+import { Typography } from "antd";
 
-import {
+import { forumUrl, gitHubUrl, telegramGroupUrl, wikiUrl } from "../../constants";
+
+import BreadcrumbWrapper, {
     HiddenDesktop,
-    StyledBreadcrumb,
     StyledContent,
     StyledLayout,
     StyledSider,
@@ -25,15 +26,51 @@ export const CommunityPage = () => {
                 <HiddenDesktop>
                     <CommunitySubNav />
                 </HiddenDesktop>
-                <StyledBreadcrumb
+                <BreadcrumbWrapper
                     items={[{ title: t("home.navigationTitle") }, { title: t("community.navigationTitle") }]}
                 />
                 <StyledContent>
-                    <h1>{t(`community.title`)}</h1>
+                    <h1>{t("community.title")}</h1>
                     <Paragraph>
-                        <h2>Get involved</h2>
-                        Be a part of our global contributor community by writing code, commenting on issues, or
-                        participate in discussons in our telegram group.
+                        <h2>{t("community.community.getInvolved")}</h2>
+                        {t("community.community.getInvolvedText1")}
+                    </Paragraph>
+                    <Paragraph>
+                        <Paragraph>{t("community.community.getInvolvedText2")}</Paragraph>
+                        <ul>
+                            <li>
+                                <Link to={gitHubUrl} target="_blank">
+                                    GitHub
+                                </Link>
+                                <ul>
+                                    <li>{t("community.community.github")}</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <Link to={telegramGroupUrl} target="_blank">
+                                    Telegram Chat
+                                </Link>
+                                <ul>
+                                    <li>{t("community.community.telegram")}</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <Link to={forumUrl} target="_blank">
+                                    Discourse Forum
+                                </Link>
+                                <ul>
+                                    <li>{t("community.community.discourse")}</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <Link to={wikiUrl} target="_blank">
+                                    TeddyCloud Wiki
+                                </Link>
+                                <ul>
+                                    <li>{t("community.community.teddyCloudWiki")}</li>
+                                </ul>
+                            </li>
+                        </ul>
                     </Paragraph>
                 </StyledContent>
             </StyledLayout>

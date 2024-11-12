@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useField } from "formik";
-import FormItem from "antd/es/form/FormItem";
 import { InputNumber, InputNumberProps, message, Checkbox } from "antd";
+import FormItem from "antd/es/form/FormItem";
+import { useField } from "formik";
+
 import { TeddyCloudApi } from "../../api";
 import { defaultAPIConfig } from "../../config/defaultApiConfig";
 
@@ -41,19 +42,8 @@ const InputNumberField = (props: InputNumberFieldProps & InputNumberProps) => {
     const api = new TeddyCloudApi(defaultAPIConfig());
 
     const handleOverlayChange = (checked: boolean) => {
-        const overlayRoute = `?overlay=${overlayId}`;
-        const url = `${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/${
-            checked ? "set" : "reset"
-        }/${name}${overlayRoute}`;
-
         try {
-            fetch(url, {
-                method: "POST",
-                body: checked ? field.value?.toString() || "" : "", // Send value only when setting
-                headers: {
-                    "Content-Type": "text/plain",
-                },
-            })
+            api.apiPostTeddyCloudSetting(name, field.value, overlayId, !checked)
                 .then(() => {
                     // Trigger write config only if setting was successfully updated
                     triggerWriteConfig();
@@ -75,7 +65,7 @@ const InputNumberField = (props: InputNumberFieldProps & InputNumberProps) => {
 
     const fetchFieldValue = () => {
         try {
-            fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/get/${name}`)
+            api.apiGetTeddyCloudSettingRaw(name)
                 .then((response) => response.text())
                 .then((value) => {
                     helpers.setValue(value === "" ? undefined : Number(value));
@@ -109,16 +99,8 @@ const InputNumberField = (props: InputNumberFieldProps & InputNumberProps) => {
                 addonAfter={addonAfter}
                 disabled={!overlayed && overlayed !== undefined} // Disable when overlayed is unset
                 onChange={(value: number | undefined | string | null) => {
-                    const overlayRoute = overlayed ? `?overlay=` + overlayId : ``;
-
                     try {
-                        fetch(`${import.meta.env.VITE_APP_TEDDYCLOUD_API_URL}/api/settings/set/${name}${overlayRoute}`, {
-                            method: "POST",
-                            body: value?.toString(),
-                            headers: {
-                                "Content-Type": "text/plain",
-                            },
-                        })
+                        api.apiPostTeddyCloudSetting(name, value, overlayId)
                             .then(() => {
                                 triggerWriteConfig();
                                 message.success(t("settings.saved"));

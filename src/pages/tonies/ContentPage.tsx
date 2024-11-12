@@ -1,27 +1,21 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Select } from "antd";
-import {
+
+import BreadcrumbWrapper, {
     HiddenDesktop,
-    StyledBreadcrumb,
     StyledContent,
     StyledLayout,
     StyledSider,
 } from "../../components/StyledComponents";
-
 import { ToniesSubNav } from "../../components/tonies/ToniesSubNav";
-import { FileBrowser } from "../../components/tonies/FileBrowser";
-import { defaultAPIConfig } from "../../config/defaultApiConfig";
-import { TeddyCloudApi } from "../../api";
-import { useTonieboxContent } from "../../components/tonies/OverlayContentDirectories";
+import { FileBrowser } from "../../components/utils/FileBrowser";
+import { useTeddyCloud } from "../../TeddyCloudContext";
 
-const api = new TeddyCloudApi(defaultAPIConfig());
 const { Option } = Select;
 
 export const ContentPage = () => {
     const { t } = useTranslation();
-
-    const { tonieBoxContentDirs, overlay, handleSelectChange } = useTonieboxContent();
+    const { tonieBoxContentDirs, overlay, handleContentOverlayChange } = useTeddyCloud();
 
     return (
         <>
@@ -32,7 +26,7 @@ export const ContentPage = () => {
                 <HiddenDesktop>
                     <ToniesSubNav />
                 </HiddenDesktop>
-                <StyledBreadcrumb
+                <BreadcrumbWrapper
                     items={[
                         { title: t("home.navigationTitle") },
                         { title: t("tonies.navigationTitle") },
@@ -46,7 +40,10 @@ export const ContentPage = () => {
                             justifyContent: "space-between",
                             alignContent: "center",
                             flexDirection: "row",
+                            flexWrap: "wrap",
+                            gap: 8,
                             alignItems: "center",
+                            marginBottom: 8,
                         }}
                     >
                         <h1>{t("tonies.content.title")}</h1>
@@ -54,7 +51,7 @@ export const ContentPage = () => {
                             <Select
                                 id="contentDirectorySelect"
                                 defaultValue=""
-                                onChange={handleSelectChange}
+                                onChange={handleContentOverlayChange}
                                 style={{ maxWidth: "300px" }}
                                 value={overlay}
                                 title={t("tonies.content.showToniesOfBoxes")}

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { useField } from "formik";
+
 import { OptionsItem } from "../../api";
 import { SwitchField } from "../form/SwitchField";
-import { useField } from "formik";
 import { InputField } from "../form/InputField";
 import { InputNumberField } from "../form/InputNumberField";
 
@@ -12,9 +13,11 @@ type OptionItemProps = {
 };
 
 export const OptionItem = ({ option, noOverlay, overlayId }: OptionItemProps) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { type, iD, description, label, shortname, value, overlayed } = option;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [optionValue, setOptionValue] = useState<string>("");
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [field, meta, { setValue }] = useField(iD);
 
     useEffect(() => {
